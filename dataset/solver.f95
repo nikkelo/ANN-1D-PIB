@@ -1,6 +1,5 @@
 MODULE solver
   IMPLICIT NONE
-  INTEGER, PARAMETER, PUBLIC :: sp = SELECTED_REAL_KIND (p = 6, r = 37) ! single precision parameter
   INTEGER, PARAMETER, PUBLIC :: dp = SELECTED_REAL_KIND (p = 13, r = 300) ! double precision parameter
 
   CONTAINS
@@ -23,15 +22,19 @@ MODULE solver
         n = n + 1
     END DO
 
+    CLOSE(11)
+
     ! allocate "coefficients" based on the number of coefficients in the file
     ALLOCATE(coefficients(n)) 
+
+    OPEN (UNIT = 11, FILE = infile, STATUS = "old", ACTION = "read")
 
     ! assign coefficients to each member of the array
     DO i = 1, n
         READ(UNIT = 11, FMT = *) coefficients(i)
     END DO
 
-    CLOSE(10)
+    CLOSE(11)
 
     END SUBROUTINE read_poly
 
@@ -61,18 +64,55 @@ MODULE solver
       INTEGER :: i
 
       DO i = 1, SIZE(coefficients)
-        V(i) = build_poly(x(i), coefficients(i))
+        V(i) = build_poly(x(i), coefficients)
       END DO
 
     END SUBROUTINE build_potential
 
     ! BUILD HAMILTONIAN MATRIX
-    ! SUBROUTINE build_hamiltonian()
+    SUBROUTINE build_hamiltonian(V, dx, H)
+      IMPLICIT NONE 
+      REAL(KIND = dp), DIMENSION(:), INTENT(IN) :: V
+      REAL(KIND = dp), INTENT (IN) :: dx 
+      REAL(KIND = dp), DIMENSION(:,:), INTENT(OUT) :: H 
+      INTEGER i, N 
 
-    ! END SUBROUTINE build_hamiltonian
+      N = SIZE(V) ! grid size
+      H = 0.0_dp
 
-    ! SUBROUTINE solve_eigenproblem
+      DO i = 1, N 
+        H(i,i) = 1.0_dp / (dx**2) + V(i) ! diagonal elements
 
-    ! END SUBROUTINE solve_eigenproblem
+        IF (i < N) THEN ! off-diagonal elements 
+          H(i, i+1) = -0.5_dp / (dx**2)
+          H(i+1, i) = -0.5_dp / (dx**2)
+        END IF
+      END DO  
+
+    END SUBROUTINE build_hamiltonian
+
+    ! SOLVE FOR THE EIGENVALUES AND EIGENVECTORS USING DYSEV (LAPACK)
+    SUBROUTINE solve_eigenvalue(H, eigenvalues, eigenvectors)
+      IMPLICIT NONE 
+      REAL(KIND = dp), DIMENSION(:,:), INTENT(IN) :: H 
+      REAL(KIND = dp), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: eigenvalues
+      REAL(KIND = dp), DIMENSION(:,:), ALLOCATABLE, INTENT(OUT) :: eigenvectors
+      INTEGER :: N, LWORK
+      REAL(KIND = dp), DIMENSION(:), ALLOCATABLE :: WORK
+      INTEGER :: INFO
+
+      N = SIZE(H, 1)
+
+      ALLOCATE(eigenvalues(N))
+      ALLOCATE(eigenvectors(N, N))
+
+      eigenvectors = H 
+
+      ! allocate minimum workload size for DYSEV
+      LWORK = 3*N - 1
+      ALLOCATE(WORK(LWORK))
+      CALL DSYEV('V', 'U', N, eigenvectors, N, eigenvalues, WORK, LWORK, INFO)
+
+    END SUBROUTINE solve_eigenvalue
 
 END MODULE solver
