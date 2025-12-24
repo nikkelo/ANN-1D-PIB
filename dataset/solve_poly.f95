@@ -7,17 +7,17 @@ PROGRAM solve_poly
   REAL(KIND = dp) :: L, dx
   INTEGER :: N, i
 
-  CALL read_poly("test_coefficients.txt", coefficients)
-  PRINT *, "Polynomial coefficients:", coefficients
-
-  ! define grid parameters
   N = 512 ! grid points
-  L = 0.5_dp ! box size
-  dx = (2.0_dp * L)/(N - 1) ! grid space
 
   ALLOCATE(x(N))
   ALLOCATE(V(N))
   ALLOCATE(H(N, N))
+
+  CALL read_input("coefficients.txt", L, coefficients)
+
+  ! grid spacing setup 
+  L = L/2
+  dx = (2.0_dp * L) / (N - 1)
 
   ! write out a grid from -L to +L
   DO i = 1, N
@@ -33,11 +33,9 @@ PROGRAM solve_poly
 
   CALL solve_eigenvalue(H, eigV, eigF)
 
-  ! print first 10 eigenvalues
-  DO i = 1, MIN(10, N)
-    PRINT *, "E", i, " = ", eigV(i)
-  END DO
+  CALL write_result("training_data.csv", coefficients, eigV, N, L)
 
-  DEALLOCATE(x, V, H, eigV, eigF, coefficients)
+  PRINT *, 'Result saved to training_data.csv!'
+  END DO
 
 END PROGRAM solve_poly

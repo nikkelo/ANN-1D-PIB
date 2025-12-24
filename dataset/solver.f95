@@ -4,16 +4,19 @@ MODULE solver
 
   CONTAINS
 
-  ! READ POLYNOMIAL FROM FILE
-  SUBROUTINE read_poly(infile, coefficients)
+  ! READ BOX SIZE AND POLYNOMIAL FROM FILE
+  SUBROUTINE read_input(infile, L, coefficients)
     IMPLICIT NONE
     CHARACTER(LEN = *), INTENT(IN) :: infile
+    REAL(KIND = dp), INTENT(OUT) :: L
     REAL(KIND = dp), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: coefficients
     INTEGER :: i, ios, n
 
     OPEN (UNIT = 11, FILE = infile, STATUS = "old", ACTION = "read")  
 
     n = 0 ! number of coefficients read
+
+    READ(UNIT = 11, FMT = *) L ! read first number as L
 
     ! read the number of coefficients
     DO
@@ -29,6 +32,8 @@ MODULE solver
 
     OPEN (UNIT = 11, FILE = infile, STATUS = "old", ACTION = "read")
 
+    READ(UNIT = 11, FMT = *) L ! read first number as L
+
     ! assign coefficients to each member of the array
     DO i = 1, n
         READ(UNIT = 11, FMT = *) coefficients(i)
@@ -36,7 +41,7 @@ MODULE solver
 
     CLOSE(11)
 
-    END SUBROUTINE read_poly
+    END SUBROUTINE read_input
 
     ! BUILD POLYNOMIAL FROM READ FILE AT POINT X ON THE CURVE
     FUNCTION build_poly(x, coefficients)
@@ -114,5 +119,41 @@ MODULE solver
       CALL DSYEV('V', 'U', N, eigenvectors, N, eigenvalues, WORK, LWORK, INFO)
 
     END SUBROUTINE solve_eigenvalue
+
+    ! WRITE THE RESULTS TO A FILE
+    SUBROUTINE write_result(filename, coefficients, eigenvalues, N, L)
+      IMPLICIT NONE
+      CHARACTER(LEN=*), INTENT(IN) :: filename
+      REAL(KIND=dp), DIMENSION(:), INTENT(IN) :: coefficients, eigenvalues
+      REAL(KIND=dp), INTENT(IN) :: L
+      INTEGER, INTENT(IN) :: N
+
+
+      INTEGER :: unit_out, i
+
+      ! open the file 
+      OPEN(NEWUNIT = unit_out, FILE = filename, &
+      STATUS = 'OLD', POSITION = 'APPEND', ACTION = 'WRITE')
+
+      ! insert the calculated data
+      DO i = 1, 5
+        IF (i <= SIZE(coefficients)) THEN
+      WRITE(unit_out, '(ES20.10E3,A)', ADVANCE = 'NO') coefficients(i), ','
+        ELSE
+      WRITE(unit_out, '(ES20.10E3,A)', ADVANCE = 'NO') 0.0_dp, ','
+        END IF
+      END DO
+
+      WRITE(unit_out, '(ES20.10E3,A)', ADVANCE = 'NO') L, ','
+
+      DO i = 1, MIN(10, N)
+        WRITE(unit_out, '(ES20.10E3)', ADVANCE = 'NO') eigenvalues(i)
+        IF (i < MIN(10, N)) WRITE(unit_out, '(A)', ADVANCE='NO') ','
+      END DO
+
+      WRITE(unit_out, *)
+
+      CLOSE(unit_out)
+    END SUBROUTINE write_result
 
 END MODULE solver
