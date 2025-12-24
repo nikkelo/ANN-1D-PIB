@@ -128,13 +128,14 @@ MODULE solver
       REAL(KIND=dp), INTENT(IN) :: L
       INTEGER, INTENT(IN) :: N
 
-
       INTEGER :: unit_out, i
 
       ! open the file 
       OPEN(NEWUNIT = unit_out, FILE = filename, &
       STATUS = 'OLD', POSITION = 'APPEND', ACTION = 'WRITE')
 
+      WRITE(unit_out, '(ES20.10E3,A)', ADVANCE = 'NO') L, ','
+      
       ! insert the calculated data
       DO i = 1, 5
         IF (i <= SIZE(coefficients)) THEN
@@ -143,8 +144,6 @@ MODULE solver
       WRITE(unit_out, '(ES20.10E3,A)', ADVANCE = 'NO') 0.0_dp, ','
         END IF
       END DO
-
-      WRITE(unit_out, '(ES20.10E3,A)', ADVANCE = 'NO') L, ','
 
       DO i = 1, MIN(10, N)
         WRITE(unit_out, '(ES20.10E3)', ADVANCE = 'NO') eigenvalues(i)
