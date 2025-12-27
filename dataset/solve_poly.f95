@@ -35,6 +35,4 @@ PROGRAM solve_poly
 
   CALL write_result("training_data.csv", coefficients, eigV, N, L)
 
-  PRINT *, 'Result saved to training_data.csv!'
-
 END PROGRAM solve_poly
