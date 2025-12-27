@@ -15,4 +15,3 @@ X_train, X_test, y_train, y_test = pib.split_dataset(df)
 rf_model, y_pred, y_test = pib.PIB_random_forest(X_train, X_test, y_train, y_test)
 
 r2 = pib.PIB_evaluate_model(y_test, y_pred)
-print(f"R^2 Score: {r2}")
