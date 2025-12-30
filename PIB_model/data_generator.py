@@ -10,6 +10,15 @@ import pandas as pd
 from pathlib import Path
 
 def run_solver(L_max, A, N, output_file):
+    """
+    Generate training data by running the Fortran solver multiple times with random parameters.
+
+    Args:
+        L_max (float): Maximum box length.
+        A (float): Maximum absolute value for polynomial coefficients.
+        N (int): Number of training samples to generate.
+        output_file (str): Path to the output file where the generated data will be saved.
+    """
     root = Path(__file__).resolve().parent.parent
     dataset_dir = root / "dataset"
     exe_path = dataset_dir / "solve_poly.exe"
@@ -18,8 +27,6 @@ def run_solver(L_max, A, N, output_file):
     if os.path.exists(output_path):
         os.remove(output_path)
     open(output_path, 'w').close()
-
-    print(f"Working...")
 
     for i in range(N):
         L = random.uniform(0, L_max)
