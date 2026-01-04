@@ -9,16 +9,17 @@ from sklearn.model_selection import train_test_split
 
 def load_dataset(file_path):
     """
-    Load the dataset from the specified CSV file.
+    Load the dataset from the specified CSV file. Uses only the first 5 energy levels to train the models.
 
     Args:
         file_path (str): Path to the CSV file containing the dataset.
     """
 
     df = pd.read_csv(file_path)
+    df = df.drop(df.columns[-5:], axis = 1)
     return df
 
-def split_dataset(df, test_size=0.2, random_state=42):
+def split_dataset(df, test_size = 0.2, random_state = 42):
     """
     Split the dataset into training and testing sets.
     
@@ -29,7 +30,7 @@ def split_dataset(df, test_size=0.2, random_state=42):
     """
 
     X = df[["Box Length", "Coefficient 0", "Coefficient 1", "Coefficient 2", "Coefficient 3", "Coefficient 4"]]
-    y = df[["Energy 0", "Energy 1", "Energy 2", "Energy 3", "Energy 4", "Energy 5", "Energy 6", "Energy 7", "Energy 8", "Energy 9"]]
+    y = df[["Energy 0", "Energy 1", "Energy 2", "Energy 3", "Energy 4"]]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.33, random_state = 42)
     return X_train, X_test, y_train, y_test
@@ -126,8 +127,11 @@ def PIB_evaluate_model(y_test, y_pred):
     """
 
     from sklearn.metrics import r2_score
+    from sklearn.metrics import mean_squared_error
 
     r2 = r2_score(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
     print(f"R^2 Score: {r2}")
+    print(f"MSE: {mse}")
     return r2
 

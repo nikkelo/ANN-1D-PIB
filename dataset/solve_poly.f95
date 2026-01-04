@@ -33,6 +33,6 @@ PROGRAM solve_poly
 
   CALL solve_eigenvalue(H, eigV, eigF)
 
-  CALL write_result("training_data.csv", coefficients, eigV, N, L)
+  CALL write_result("training_data.csv", coefficients, eigV, N, 2*L)
 
 END PROGRAM solve_poly

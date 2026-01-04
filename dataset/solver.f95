@@ -68,7 +68,7 @@ MODULE solver
       REAL(KIND = dp), DIMENSION(:), INTENT(OUT) :: V
       INTEGER :: i
 
-      DO i = 1, SIZE(coefficients)
+      DO i = 1, SIZE(x)
         V(i) = build_poly(x(i), coefficients)
       END DO
 
