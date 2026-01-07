@@ -29,18 +29,16 @@ def run_solver(L_max, A, N, output_file):
         os.remove(output_path)
     open(output_path, 'w').close()
 
-    sampler = qmc.Sobol(d = 6, scramble = True, seed = 42)
-    if (N & (N - 1)) == 0 and N != 0:  # N is a power of 2
-        sample_unit = sampler.random_base2(m=int(np.log2(N)))
-    else:
-        sample_unit = sampler.random(n=N)
-    L_min = 0.1 # minimum box length
-    a0 = -A + 2*A * sample_unit[:, 0] 
-    a1 = -A + 2*A * sample_unit[:, 1]
-    a2 = -A + 2*A * sample_unit[:, 2]
-    a3 = -A + 2*A * sample_unit[:, 3]
-    a4 = -A + 2*A * sample_unit[:, 4]
-    L_vals = L_min + (L_max - L_min) * sample_unit[:, 5]
+    L_min = 0.1  
+
+    t = np.linspace(0.0, 1.0, N, endpoint = True)
+
+    a0 = -A + 2 * A * t
+    a1 = -A + 2 * A * t
+    a2 = -A + 2 * A * t
+    a3 = -A + 2 * A * t
+    a4 = -A + 2 * A * t
+    L_vals = L_min + (L_max - L_min) * t
 
     for i in range(N):
         L = L_vals[i]
@@ -51,7 +49,7 @@ def run_solver(L_max, A, N, output_file):
             for coeff in coeffs:
                 f.write(f"{coeff}\n")
 
-        subprocess.run([str(exe_path)], cwd=str(dataset_dir), check=True)
+        subprocess.run([str(exe_path)], cwd = str(dataset_dir), check = True)
 
     print(f"Done. Generated {N} training samples!")
 

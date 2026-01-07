@@ -6,6 +6,11 @@ Module for training and evaluating ML models on 1D particle in a box data, gener
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
 
 def load_dataset(file_path):
     """
@@ -45,8 +50,6 @@ def PIB_random_forest(X_train, X_test, y_train, y_test):
         y_train (pd.DataFrame): Training targets.
         y_test (pd.DataFrame): Testing targets.
     """
-    from sklearn.ensemble import RandomForestRegressor
-    from sklearn.preprocessing import StandardScaler
 
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
@@ -64,29 +67,6 @@ def PIB_random_forest(X_train, X_test, y_train, y_test):
 
     return rf, y_pred, y_test
 
-def PIB_ridge_regression(X_train, X_test, y_train, y_test):
-    """
-    Train a Ridge Regression model on the training data and evaluate it on the test data.
-
-    Args:
-        X_train (pd.DataFrame): Training features.
-        X_test (pd.DataFrame): Testing features.
-        y_train (pd.DataFrame): Training targets.
-        y_test (pd.DataFrame): Testing targets.
-    """
-    from sklearn.linear_model import Ridge
-    from sklearn.preprocessing import StandardScaler
-
-    scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test) 
-
-    rr = Ridge(alpha=1.0)
-    rr.fit(X_train, y_train)
-    y_pred = rr.predict(X_test)
-    
-    return rr, y_pred, y_test
-
 def PIB_ANN(X_train, X_test, y_train, y_test):
     """
     Train a Neural Network model on the training data and evaluate it on the test data.
@@ -97,20 +77,18 @@ def PIB_ANN(X_train, X_test, y_train, y_test):
         y_train (pd.DataFrame): Training targets.
         y_test (pd.DataFrame): Testing targets.
     """
-
-    from sklearn.neural_network import MLPRegressor
-    from sklearn.preprocessing import StandardScaler
-
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test) 
 
     nn = MLPRegressor(
-        hidden_layer_sizes = (100, 100, 100),
+        hidden_layer_sizes = (256, 128, 64, 64),
         activation = 'relu',
         solver = 'adam',
-        max_iter = 500,
-        random_state = 42
+        max_iter = 1024,
+        random_state = 42,
+        alpha = 0.01,
+        learning_rate_init = 0.001,
     )
     nn.fit(X_train, y_train)
     y_pred = nn.predict(X_test)
@@ -126,12 +104,8 @@ def PIB_evaluate_model(y_test, y_pred):
         y_pred (np.ndarray): Predicted target values.
     """
 
-    from sklearn.metrics import r2_score
-    from sklearn.metrics import mean_squared_error
-
     r2 = r2_score(y_test, y_pred)
     mse = mean_squared_error(y_test, y_pred)
     print(f"R^2 Score: {r2}")
     print(f"MSE: {mse}")
-    return r2
-
+    return r2, mse

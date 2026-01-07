@@ -12,7 +12,7 @@ MODULE solver
     REAL(KIND = dp), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: coefficients
     INTEGER :: i, ios, n
 
-    OPEN (UNIT = 11, FILE = infile, STATUS = "old", ACTION = "read")  
+    OPEN(UNIT = 11, FILE = infile, STATUS = "old", ACTION = "read")  
 
     n = 0 ! number of coefficients read
 
@@ -30,7 +30,7 @@ MODULE solver
     ! allocate "coefficients" based on the number of coefficients in the file
     ALLOCATE(coefficients(n)) 
 
-    OPEN (UNIT = 11, FILE = infile, STATUS = "old", ACTION = "read")
+    OPEN(UNIT = 11, FILE = infile, STATUS = "old", ACTION = "read")
 
     READ(UNIT = 11, FMT = *) L ! read first number as L
 
@@ -105,6 +105,7 @@ MODULE solver
       INTEGER :: N, LWORK
       REAL(KIND = dp), DIMENSION(:), ALLOCATABLE :: WORK
       INTEGER :: INFO
+      EXTERNAL :: DSYEV ! LAPACK's DYSEV subroutine
 
       N = SIZE(H, 1)
 
@@ -123,9 +124,9 @@ MODULE solver
     ! WRITE THE RESULTS TO A FILE
     SUBROUTINE write_result(filename, coefficients, eigenvalues, N, L)
       IMPLICIT NONE
-      CHARACTER(LEN=*), INTENT(IN) :: filename
-      REAL(KIND=dp), DIMENSION(:), INTENT(IN) :: coefficients, eigenvalues
-      REAL(KIND=dp), INTENT(IN) :: L
+      CHARACTER(LEN = *), INTENT(IN) :: filename
+      REAL(KIND = dp), DIMENSION(:), INTENT(IN) :: coefficients, eigenvalues
+      REAL(KIND = dp), INTENT(IN) :: L
       INTEGER, INTENT(IN) :: N
 
       INTEGER :: unit_out, i
@@ -134,19 +135,19 @@ MODULE solver
       OPEN(NEWUNIT = unit_out, FILE = filename, &
       STATUS = 'OLD', POSITION = 'APPEND', ACTION = 'WRITE')
 
-      WRITE(unit_out, '(ES20.10E3,A)', ADVANCE = 'NO') L, ','
+      WRITE(unit_out, '((F12.6,A))', ADVANCE = 'NO') L, ','
       
       ! insert the calculated data
       DO i = 1, 5
         IF (i <= SIZE(coefficients)) THEN
-      WRITE(unit_out, '(ES20.10E3,A)', ADVANCE = 'NO') coefficients(i), ','
+      WRITE(unit_out, '((F12.6,A))', ADVANCE = 'NO') coefficients(i), ','
         ELSE
-      WRITE(unit_out, '(ES20.10E3,A)', ADVANCE = 'NO') 0.0_dp, ','
+      WRITE(unit_out, '((F12.6,A))', ADVANCE = 'NO') 0.0_dp, ','
         END IF
       END DO
 
       DO i = 1, MIN(10, N)
-        WRITE(unit_out, '(ES20.10E3)', ADVANCE = 'NO') eigenvalues(i)
+        WRITE(unit_out, '(F12.6)', ADVANCE = 'NO') eigenvalues(i)
         IF (i < MIN(10, N)) WRITE(unit_out, '(A)', ADVANCE='NO') ','
       END DO
 

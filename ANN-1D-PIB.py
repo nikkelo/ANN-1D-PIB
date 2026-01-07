@@ -24,7 +24,7 @@ match dataset_choice:
         print("Using curated dataset.")
 
 # load data and train model
-print (f"Choose model to train: Random Forest (RF), Ridge Regression (RR), Neural Network (NN). Type RF/RR/NN")
+print (f"Choose model to train: Random Forest (RF) or Neural Network (NN). Type RF/NN.")
 model_choice = input().strip().upper()
 match model_choice:
     case 'RF':
@@ -32,11 +32,6 @@ match model_choice:
         df = pib.load_dataset(training_data)
         X_train, X_test, y_train, y_test = pib.split_dataset(df)
         rf_model, y_pred, y_test = pib.PIB_random_forest(X_train, X_test, y_train, y_test)
-    case 'RR':
-        print("Training Ridge Regression model...")
-        df = pib.load_dataset(training_data)
-        X_train, X_test, y_train, y_test = pib.split_dataset(df)
-        krr_model, y_pred, y_test = pib.PIB_ridge_regression(X_train, X_test, y_train, y_test)
     case 'NN':
         print("Training Neural Network model...")
         df = pib.load_dataset(training_data)
