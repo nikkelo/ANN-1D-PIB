@@ -5,13 +5,14 @@ PROGRAM solve_poly
   REAL(KIND = dp), DIMENSION(:), ALLOCATABLE :: coefficients, x, V, eigV
   REAL(kind = dp), DIMENSION(:,:), ALLOCATABLE :: H, eigF
   REAL(KIND = dp) :: L, dx
-  INTEGER :: N, i
+  INTEGER :: N, N_in, i
 
-  N = 512 ! grid points
+  N = 513 ! grid points
+  N_in = N - 2 ! grid points excluding boundaries
 
-  ALLOCATE(x(N))
-  ALLOCATE(V(N))
-  ALLOCATE(H(N, N))
+  ALLOCATE(x(N_in))
+  ALLOCATE(V(N_in))
+  ALLOCATE(H(N_in, N_in))
 
   CALL read_input("coefficients.txt", L, coefficients)
 
@@ -20,12 +21,12 @@ PROGRAM solve_poly
   dx = (2.0_dp * L) / (N - 1)
 
   ! write out a grid from -L to +L
-  DO i = 1, N
-    x(i) = -L + (i - 1) * dx
+  DO i = 1, N_in
+    x(i) = -L + i * dx
   END DO
 
   ! get the potential at every grid
-  DO i = 1, N
+  DO i = 1, N_in
     V(i) = build_poly(x(i),coefficients)
   END DO
 

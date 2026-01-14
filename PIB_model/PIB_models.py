@@ -37,7 +37,7 @@ def split_dataset(df, test_size = 0.2, random_state = 42):
     X = df[["Box Length", "Coefficient 0", "Coefficient 1", "Coefficient 2", "Coefficient 3", "Coefficient 4"]]
     y = df[["Energy 0", "Energy 1", "Energy 2", "Energy 3", "Energy 4"]]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.33, random_state = 42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state = 42)
     return X_train, X_test, y_train, y_test
 
 def PIB_random_forest(X_train, X_test, y_train, y_test):
@@ -50,10 +50,6 @@ def PIB_random_forest(X_train, X_test, y_train, y_test):
         y_train (pd.DataFrame): Training targets.
         y_test (pd.DataFrame): Testing targets.
     """
-
-    scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test) 
     
     rf = RandomForestRegressor(
     n_estimators = 300,
@@ -77,12 +73,9 @@ def PIB_ANN(X_train, X_test, y_train, y_test):
         y_train (pd.DataFrame): Training targets.
         y_test (pd.DataFrame): Testing targets.
     """
-    scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test) 
 
     nn = MLPRegressor(
-        hidden_layer_sizes = (256, 128, 64, 64),
+        hidden_layer_sizes = (256, 128, 64),
         activation = 'relu',
         solver = 'adam',
         max_iter = 1024,

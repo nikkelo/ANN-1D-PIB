@@ -11,14 +11,14 @@ print(f"Press Enter to proceed with curated dataset. Press Y to generate new dat
 dataset_choice = input().strip().upper()
 match dataset_choice:
     case 'Y':
-        print(f"Enter L_max (default 1.0): ")
-        L_max = float(input() or 1.0)
+        print(f"Enter L (default 1.0): ")
+        L = float(input() or 1.0)
         print(f"Enter A (default 10.0): ")
         A = float(input() or 10.0)
         print(f"Enter N (default 1024): ")
         N = int(input() or 1024)
         print("Generating new dataset...")
-        dg.run_solver(L_max, A, N, output_file)
+        dg.run_solver(L, A, N, output_file)
         dg.convert_headers(output_file, training_data)
     case _:
         print("Using curated dataset.")
