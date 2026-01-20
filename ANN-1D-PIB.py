@@ -25,6 +25,7 @@ match dataset_choice:
 
 # load data and train model
 print (f"Choose model to train: Random Forest (RF) or Neural Network (NN). Type RF/NN.")
+dg.convert_headers(output_file, training_data)
 model_choice = input().strip().upper()
 match model_choice:
     case 'RF':
