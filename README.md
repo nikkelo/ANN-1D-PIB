@@ -23,14 +23,14 @@ The **artificial neural network** has the following pre-requisites:
 
 To use the neural network, compile the **ANN-1D-PIB.py** file in the root folder and follow the instructions given in the command line interface. 
 + Press Enter to use the default dataset included in the repository. Alternatively, press Y to create your own dataset. 
-    + If you opt to create your own dataset, you'll be asked for **L_max** (maximum size of your box), **A** (the parameter used to vary the coefficients of the V(x) polynomial) and **N** (the number of samples to generate). If you're not sure about any of these parameters, pressing Enter will use the default values.
-+ After selecting your dataset, you have a choice between 3 models:
+    + If you opt to create your own dataset, you'll be asked for **L** (fixed size of your box), **A** (the parameter used to vary the coefficients of the V(x) polynomial) and **N** (the number of samples to generate). If you're not sure about any of these parameters, pressing Enter will use the default values.
++ After selecting your dataset, you have a choice between 2 models:
     + Type NN for the Artificial Neural Network
     + Type RF for the Random Forest 
-    + Type RR for the Ridge Regression
 + Upon selecting the model, the program will use the database to train the model and then output a result in the form of an R2 score and MSE. 
 
 ## Numerical Solver
 
-The numerical solver used to create a training dataset is built in Fortran. All of the core subroutines used to compute the solutions of the Schrodinger equation are given in the **solver.f95** module. Those subroutines are outlined and explained below:
-- 
+The numerical solver used to create a training dataset is built in Fortran. All of the core subroutines used to compute the solutions of the Schrodinger equation are given in the **solver.f95** module. 
+
+You need BLAS to be able to run the solver. 
